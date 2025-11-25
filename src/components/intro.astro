@@ -33,13 +33,53 @@ import logoImage from '../assets/logomark.png';
     <code
       class="inline-flex items-center space-x-4 rounded-lg bg-gray-800 p-4 m-2 pl-6 text-left text-white text-sm sm:text-base"
     >
-      <span class="flex gap-4">
+      <span class="flex gap-4 items-center w-full">
         <span class="shrink-0 text-gray-500"> $</span>
 
-        <span class="flex-1 pr-1">
+        <span class="flex-1">
           <span id="brew_command">brew install meetingbar</span>
         </span>
+
+        <button
+          id="copy-brew-command"
+          onclick="copyBrewCommand()"
+          class="shrink-0 text-gray-400 hover:text-white transition-colors cursor-pointer ml-2"
+          aria-label="Copy brew command"
+          title="Copy to clipboard"
+        >
+          <Icon name="mdi:content-copy" class="h-5 w-5" />
+        </button>
       </span>
     </code>
   </div>
 </ContentSection>
+
+<script is:inline>
+  async function copyBrewCommand() {
+    const copyButton = document.getElementById('copy-brew-command');
+    const brewCommand = document.getElementById('brew_command');
+
+    if (copyButton && brewCommand) {
+      try {
+        await navigator.clipboard.writeText(brewCommand.textContent || '');
+
+        // Change icon to checkmark and update color
+        const originalHTML = copyButton.innerHTML;
+        copyButton.innerHTML = '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+        copyButton.classList.remove('text-gray-400');
+        copyButton.classList.add('text-green-400');
+        copyButton.setAttribute('title', 'Copied!');
+
+        // Reset after 2 seconds
+        setTimeout(() => {
+          copyButton.innerHTML = originalHTML;
+          copyButton.classList.remove('text-green-400');
+          copyButton.classList.add('text-gray-400');
+          copyButton.setAttribute('title', 'Copy to clipboard');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+      }
+    }
+  }
+</script>
